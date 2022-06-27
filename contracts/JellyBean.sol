@@ -13,7 +13,7 @@ contract JellyBean is ERC721URIStorage, Ownable  {
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
 
-    string public JELLY_PROVENANCE;
+    string public JELLY_PROVENANCE; // SHA256 each image, then SHA256 the combined hashes for final provenance string
 
     uint256 public immutable JELLY_PRICE; 
 
