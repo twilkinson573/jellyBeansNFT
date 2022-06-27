@@ -14,18 +14,28 @@ contract JellyBean is ERC721URIStorage, Ownable  {
 
     string public JELLY_PROVENANCE;
 
-    uint256 public constant JELLY_PRICE = 80000000000000000;
+    uint256 public constant JELLY_PRICE = 80000000000000000; // 0.08
 
     uint256 public constant MAX_JELLIES = 12;
 
-    constructor(string memory _jellyProvenance) ERC721("JellyBean", "BEAN") {
+    constructor(string memory _baseURI, string memory _jellyProvenance) ERC721("JellyBean", "BEAN") {
+        _setBaseURI(_baseURI);
         JELLY_PROVENANCE = _jellyProvenance;
     }
 
     function mint() public {
-        console.log(JELLY_PRICE);
-        console.log(MAX_JELLIES);
+        uint256 = newTokenId = _tokenIds.current();
 
+        _mint(msg.sender, newTokenId);
+        _setTokenURI(newTokenId, abi.encodePacked(newTokenId));
+
+        _tokenIds.increment();
     }
+
+    // function tokenURI(uint256 tokenId) public view virtual override returns (string memory) {
+    //     require(_exists(tokenId), "ERC721Metadata: URI query for nonexistent token");
+
+    //     return string(abi.encodePacked(baseURI, _tokenId));
+    // }
 
 }
