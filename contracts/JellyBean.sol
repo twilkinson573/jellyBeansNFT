@@ -15,21 +15,24 @@ contract JellyBean is ERC721URIStorage, Ownable  {
 
     string public JELLY_PROVENANCE;
 
-    uint256 public constant JELLY_PRICE = 80000000000000000; // 0.08
+    uint256 public immutable JELLY_PRICE; 
 
-    uint256 public constant MAX_JELLIES = 12;
+    uint256 public constant MAX_JELLIES = 13; // Max supply is 12, indexed from 1
 
     string private _baseTokenURI;
 
-    constructor(string memory _initialBaseURI, string memory _jellyProvenance) ERC721("JellyBean", "BEAN") {
+    constructor(string memory _initialBaseURI, uint256 _basePrice, string memory _jellyProvenance) ERC721("JellyBean", "BEAN") {
         _baseTokenURI = _initialBaseURI;
+        JELLY_PRICE = _basePrice;
         JELLY_PROVENANCE = _jellyProvenance;
         _tokenIds.increment();
     }
 
-    function mint() public {
+    function mint() public payable {
         uint256 newTokenId = _tokenIds.current();
-
+        require(newTokenId < MAX_JELLIES, "All Jellies have been minted");
+        require(JELLY_PRICE < msg.value, "Not enough paid to mint");
+ 
         _mint(msg.sender, newTokenId);
         _setTokenURI(newTokenId, string(abi.encodePacked(Strings.toString(newTokenId), ".json")));
 
@@ -38,6 +41,14 @@ contract JellyBean is ERC721URIStorage, Ownable  {
 
     function _baseURI() internal view virtual override returns (string memory) {
         return _baseTokenURI;
+    }
+
+    function setBaseURI(string memory _newBaseURI) public onlyOwner {
+        _baseTokenURI = _newBaseURI;
+    }
+
+    function withdraw() public onlyOwner {
+        payable(msg.sender).transfer(address(this).balance);
     }
 
 }
