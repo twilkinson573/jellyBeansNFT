@@ -4,6 +4,7 @@ pragma solidity ^0.8.0;
 import "hardhat/console.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
+import "@openzeppelin/contracts/utils/Strings.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 
 import "hardhat/console.sol";
@@ -18,24 +19,25 @@ contract JellyBean is ERC721URIStorage, Ownable  {
 
     uint256 public constant MAX_JELLIES = 12;
 
-    constructor(string memory _baseURI, string memory _jellyProvenance) ERC721("JellyBean", "BEAN") {
-        _setBaseURI(_baseURI);
+    string private _baseTokenURI;
+
+    constructor(string memory _initialBaseURI, string memory _jellyProvenance) ERC721("JellyBean", "BEAN") {
+        _baseTokenURI = _initialBaseURI;
         JELLY_PROVENANCE = _jellyProvenance;
+        _tokenIds.increment();
     }
 
     function mint() public {
-        uint256 = newTokenId = _tokenIds.current();
+        uint256 newTokenId = _tokenIds.current();
 
         _mint(msg.sender, newTokenId);
-        _setTokenURI(newTokenId, abi.encodePacked(newTokenId));
+        _setTokenURI(newTokenId, string(abi.encodePacked(Strings.toString(newTokenId), ".json")));
 
         _tokenIds.increment();
     }
 
-    // function tokenURI(uint256 tokenId) public view virtual override returns (string memory) {
-    //     require(_exists(tokenId), "ERC721Metadata: URI query for nonexistent token");
-
-    //     return string(abi.encodePacked(baseURI, _tokenId));
-    // }
+    function _baseURI() internal view virtual override returns (string memory) {
+        return _baseTokenURI;
+    }
 
 }
